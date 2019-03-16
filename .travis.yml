@@ -30,7 +30,7 @@ before_install:
 script:
   # Show test environment
   - ls
-  - cat ${INV_FILE}/*
+  - cat ${INV_FILE}
   - ansible --version
   - ansible all -c docker -m setup -a 'filter=ansible_distribution*'
 

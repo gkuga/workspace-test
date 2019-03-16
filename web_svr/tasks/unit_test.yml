@@ -1,0 +1,45 @@
+---
+- ignore_errors: yes
+  block:
+  - name: Is httpd package installed?
+    shell: yum list installed | grep -e '^httpd\.'
+    register: result_rpm
+
+  - name: Is index.html present?
+    shell: test -e /var/www/html/index.html
+    register: result_file
+
+  - name: Is httpd processe started?
+    shell: ps -ef | grep http[d]
+    register: result_proc
+
+  - name: Is httpd service enabled?
+    shell: systemctl is-enabled httpd
+    register: result_enabled
+
+  - name: Is port 80 opened?
+    wait_for:
+      host: localhost
+      port: 80
+      timeout: 3
+    register: result_port
+
+  - name: Does the server return 200 OK?
+    uri:
+      url: http://localhost/
+      follow_redirects: none
+      status_code: 200
+    register: result_url
+
+- name: check test results
+  assert:
+    that: "{{ result.failed == false }}"
+  loop:
+    - "{{ result_rpm }}"
+    - "{{ result_file }}"
+    - "{{ result_proc }}"
+    - "{{ result_enabled }}"
+    - "{{ result_port }}"
+    - "{{ result_url }}"
+  loop_control:
+    loop_var: result

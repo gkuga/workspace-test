@@ -20,8 +20,8 @@ before_install:
   - export INV_FILE=${PWD}/inventory
 
   # Install Ansible
-  - sudo pip install -U pip setuptools
-  - sudo pip install ansible==${ANS_VER}
+  - pip install -U pip setuptools
+  - pip install ansible==${ANS_VER}
 
   # Prepare test container
   - docker run -d --privileged --name ${CON_ID} ${OS_TYPE}:${OS_VER} ${INIT}
@@ -29,6 +29,8 @@ before_install:
 
 script:
   # Show test environment
+  - ls
+  - cat ${INV_FILE}/*
   - ansible --version
   - ansible all -c docker -m setup -a 'filter=ansible_distribution*'
 
